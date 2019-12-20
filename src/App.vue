@@ -12,7 +12,7 @@
 <script>
 //import getWeb3 from "./web3.js";
 
-const contractAddress = "0x3C998a1BB691dEAAb73469b2f36F207291707C13";
+const contractAddress = "0x3868809Ad92Efc8Ac840c9ff96eED607c7dfbe12";
 const contractAbi = [
   {
     inputs: [],
@@ -184,6 +184,21 @@ const contractAbi = [
         internalType: "uint256[]",
         name: "",
         type: "uint256[]"
+      }
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "index",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
       }
     ],
     payable: false,
@@ -376,13 +391,19 @@ export default {
         .balanceOf(address, index)
         .call();
       return balance;
+    },
+    async index() {
+      let index = await this.contractInstance.methods.index().call();
+      return index;
     }
   },
   watch: {
     async account() {
       if (this.account) {
-        for (let i = 0; i < 10; i++) {
-          this.balances.push(await this.balanceOf(this.account, i));
+        let index = await this.index();
+        for (let i = 0; i < index; i++) {
+          let balance = await this.balanceOf(this.account, i);
+          this.balances.push(balance);
         }
       }
     }
