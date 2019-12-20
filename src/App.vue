@@ -1,11 +1,13 @@
 <template>
-  <div id="app">
-    <div>{{reciept}}</div>
-    <!-- <div>
-      <h1>Wallet</h1>
-      <div v-for="(account, index) in wallet" :key="index">{{account.address}}</div>
-    </div>-->
-    <div>Balances: {{ balances }}</div>
+  <div id="app" data-app="true">
+    <h1>Mein Account</h1>
+    <v-select v-model="account" :items="accounts" label="Account:"></v-select>
+    <h1>Mein Wallet</h1>
+    <v-row>
+      <v-col v-for="(balance,index) in balances" :key="index" align="center">
+        <offer :balance="balance" :id="index"></offer>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -365,15 +367,19 @@ const contractAbi = [
   }
 ];
 const endpoint = "http://127.0.0.1:9545";
-//const mnemonic =
-//"again indicate sadness search update gossip bitter truth empower dolphin caught club";
+const mnemonic =
+  "again indicate sadness search update gossip bitter truth empower dolphin caught club";
 import Web3 from "web3";
-//const HDWalletProvider = require("@truffle/hdwallet-provider");
+import offer from "./components/offer.vue";
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 //var Accounts = require("web3-eth-accounts");
 //var accounts = new Accounts(endpoint);
 
 export default {
   name: "app",
+  components: {
+    offer
+  },
   data() {
     return {
       web3: null,
@@ -382,7 +388,8 @@ export default {
       isLoading: false,
       reciept: null,
       wallet: undefined,
-      balances: []
+      balances: [],
+      accounts: []
     };
   },
   methods: {
@@ -400,16 +407,24 @@ export default {
   watch: {
     async account() {
       if (this.account) {
+        this.balances = [];
         let index = await this.index();
         for (let i = 0; i < index; i++) {
           let balance = await this.balanceOf(this.account, i);
           this.balances.push(balance);
         }
+
+        let accounts = await this.web3.eth.getAccounts();
+        this.accounts = accounts;
       }
     }
   },
   mounted() {
-    this.web3 = new Web3(endpoint);
+    let hd = new HDWalletProvider(
+      mnemonic,
+      new Web3.providers.HttpProvider(endpoint)
+    );
+    this.web3 = new Web3(hd);
     this.contractInstance = new this.web3.eth.Contract(
       contractAbi,
       contractAddress
@@ -443,7 +458,6 @@ export default {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   margin-top: 60px;
 }

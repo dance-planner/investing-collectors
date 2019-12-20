@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@truffle/hdwallet-provider": "^1.0.27",
+    "truffle": "^5.1.5",
     "vue": "^2.6.10",
     "vuetify": "^2.1.0",
     "web3": "^1.2.4"
