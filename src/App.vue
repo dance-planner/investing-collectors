@@ -5,23 +5,17 @@
       <h1>Wallet</h1>
       <div v-for="(account, index) in wallet" :key="index">{{account.address}}</div>
     </div>-->
-    <div>Balance: {{ balance }}</div>
+    <div>Balances: {{ balances }}</div>
   </div>
 </template>
 
 <script>
 //import getWeb3 from "./web3.js";
 
-const contractAddress = "0x6FcDdc1C8fE15eE50D0f1981cc603B35DD8B6150";
+const contractAddress = "0x3C998a1BB691dEAAb73469b2f36F207291707C13";
 const contractAbi = [
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "initialSupply",
-        type: "uint256"
-      }
-    ],
+    inputs: [],
     payable: false,
     stateMutability: "nonpayable",
     type: "constructor"
@@ -332,6 +326,27 @@ const contractAbi = [
     payable: false,
     stateMutability: "view",
     type: "function"
+  },
+  {
+    constant: false,
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "initialSupply",
+        type: "uint256"
+      }
+    ],
+    name: "createOffer",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function"
   }
 ];
 const endpoint = "http://127.0.0.1:9545";
@@ -352,14 +367,13 @@ export default {
       isLoading: false,
       reciept: null,
       wallet: undefined,
-      balance: undefined
+      balances: []
     };
   },
   methods: {
-    async balanceOf(address) {
-      console.log(address);
+    async balanceOf(address, index) {
       let balance = await this.contractInstance.methods
-        .balanceOf(address, 1)
+        .balanceOf(address, index)
         .call();
       return balance;
     }
@@ -367,7 +381,9 @@ export default {
   watch: {
     async account() {
       if (this.account) {
-        this.balance = await this.balanceOf(this.account);
+        for (let i = 0; i < 10; i++) {
+          this.balances.push(await this.balanceOf(this.account, i));
+        }
       }
     }
   },
