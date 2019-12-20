@@ -14,7 +14,7 @@
 <script>
 //import getWeb3 from "./web3.js";
 
-const contractAddress = "0x3868809Ad92Efc8Ac840c9ff96eED607c7dfbe12";
+const contractAddress = "0x509eb175Ddba72519Ab55E5433485E096a53F4Fc";
 const contractAbi = [
   {
     inputs: [],
@@ -364,6 +364,21 @@ const contractAbi = [
     payable: false,
     stateMutability: "nonpayable",
     type: "function"
+  },
+  {
+    constant: false,
+    inputs: [],
+    name: "tokensOf",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]"
+      }
+    ],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function"
   }
 ];
 const endpoint = "http://127.0.0.1:9545";
@@ -402,14 +417,21 @@ export default {
     async index() {
       let index = await this.contractInstance.methods.index().call();
       return index;
+    },
+    async tokensOf() {
+      let tokenIds = await this.contractInstance.methods
+        .tokensOf()
+        .call({ from: this.account });
+      return tokenIds;
     }
   },
   watch: {
     async account() {
       if (this.account) {
         this.balances = [];
-        let index = await this.index();
-        for (let i = 0; i < index; i++) {
+        let index = await this.tokensOf();
+        console.log(index);
+        for (let i of index) {
           let balance = await this.balanceOf(this.account, i);
           this.balances.push(balance);
         }
@@ -422,7 +444,9 @@ export default {
   mounted() {
     let hd = new HDWalletProvider(
       mnemonic,
-      new Web3.providers.HttpProvider(endpoint)
+      new Web3.providers.HttpProvider(endpoint),
+      0,
+      2
     );
     this.web3 = new Web3(hd);
     this.contractInstance = new this.web3.eth.Contract(
