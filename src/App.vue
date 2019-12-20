@@ -32,28 +32,71 @@ const contractAbi = [
       {
         indexed: true,
         internalType: "address",
-        name: "owner",
+        name: "account",
         type: "address"
       },
       {
         indexed: true,
         internalType: "address",
-        name: "spender",
+        name: "operator",
         type: "address"
       },
       {
         indexed: false,
-        internalType: "uint256",
-        name: "value",
-        type: "uint256"
+        internalType: "bool",
+        name: "approved",
+        type: "bool"
       }
     ],
-    name: "Approval",
+    name: "ApprovalForAll",
     type: "event"
   },
   {
     anonymous: false,
     inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "operator",
+        type: "address"
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "from",
+        type: "address"
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "to",
+        type: "address"
+      },
+      {
+        indexed: false,
+        internalType: "uint256[]",
+        name: "ids",
+        type: "uint256[]"
+      },
+      {
+        indexed: false,
+        internalType: "uint256[]",
+        name: "values",
+        type: "uint256[]"
+      }
+    ],
+    name: "TransferBatch",
+    type: "event"
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "operator",
+        type: "address"
+      },
       {
         indexed: true,
         internalType: "address",
@@ -69,64 +112,37 @@ const contractAbi = [
       {
         indexed: false,
         internalType: "uint256",
+        name: "id",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
         name: "value",
         type: "uint256"
       }
     ],
-    name: "Transfer",
+    name: "TransferSingle",
     type: "event"
   },
   {
-    constant: true,
+    anonymous: false,
     inputs: [
       {
-        internalType: "address",
-        name: "owner",
-        type: "address"
+        indexed: false,
+        internalType: "string",
+        name: "value",
+        type: "string"
       },
       {
-        internalType: "address",
-        name: "spender",
-        type: "address"
-      }
-    ],
-    name: "allowance",
-    outputs: [
-      {
+        indexed: true,
         internalType: "uint256",
-        name: "",
+        name: "id",
         type: "uint256"
       }
     ],
-    payable: false,
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    constant: false,
-    inputs: [
-      {
-        internalType: "address",
-        name: "spender",
-        type: "address"
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256"
-      }
-    ],
-    name: "approve",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool"
-      }
-    ],
-    payable: false,
-    stateMutability: "nonpayable",
-    type: "function"
+    name: "URI",
+    type: "event"
   },
   {
     constant: true,
@@ -135,6 +151,11 @@ const contractAbi = [
         internalType: "address",
         name: "account",
         type: "address"
+      },
+      {
+        internalType: "uint256",
+        name: "id",
+        type: "uint256"
       }
     ],
     name: "balanceOf",
@@ -151,80 +172,24 @@ const contractAbi = [
   },
   {
     constant: true,
-    inputs: [],
-    name: "decimals",
-    outputs: [
-      {
-        internalType: "uint8",
-        name: "",
-        type: "uint8"
-      }
-    ],
-    payable: false,
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    constant: false,
     inputs: [
       {
-        internalType: "address",
-        name: "spender",
-        type: "address"
+        internalType: "address[]",
+        name: "accounts",
+        type: "address[]"
       },
       {
-        internalType: "uint256",
-        name: "subtractedValue",
-        type: "uint256"
+        internalType: "uint256[]",
+        name: "ids",
+        type: "uint256[]"
       }
     ],
-    name: "decreaseAllowance",
+    name: "balanceOfBatch",
     outputs: [
       {
-        internalType: "bool",
+        internalType: "uint256[]",
         name: "",
-        type: "bool"
-      }
-    ],
-    payable: false,
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    constant: false,
-    inputs: [
-      {
-        internalType: "address",
-        name: "spender",
-        type: "address"
-      },
-      {
-        internalType: "uint256",
-        name: "addedValue",
-        type: "uint256"
-      }
-    ],
-    name: "increaseAllowance",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool"
-      }
-    ],
-    payable: false,
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    constant: true,
-    inputs: [],
-    name: "name",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string"
+        type: "uint256[]"
       }
     ],
     payable: false,
@@ -233,89 +198,139 @@ const contractAbi = [
   },
   {
     constant: true,
-    inputs: [],
-    name: "symbol",
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "operator",
+        type: "address"
+      }
+    ],
+    name: "isApprovedForAll",
     outputs: [
       {
-        internalType: "string",
+        internalType: "bool",
         name: "",
-        type: "string"
+        type: "bool"
       }
     ],
     payable: false,
     stateMutability: "view",
+    type: "function"
+  },
+  {
+    constant: false,
+    inputs: [
+      {
+        internalType: "address",
+        name: "from",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address"
+      },
+      {
+        internalType: "uint256[]",
+        name: "ids",
+        type: "uint256[]"
+      },
+      {
+        internalType: "uint256[]",
+        name: "values",
+        type: "uint256[]"
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes"
+      }
+    ],
+    name: "safeBatchTransferFrom",
+    outputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    constant: false,
+    inputs: [
+      {
+        internalType: "address",
+        name: "from",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address"
+      },
+      {
+        internalType: "uint256",
+        name: "id",
+        type: "uint256"
+      },
+      {
+        internalType: "uint256",
+        name: "value",
+        type: "uint256"
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes"
+      }
+    ],
+    name: "safeTransferFrom",
+    outputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    constant: false,
+    inputs: [
+      {
+        internalType: "address",
+        name: "operator",
+        type: "address"
+      },
+      {
+        internalType: "bool",
+        name: "approved",
+        type: "bool"
+      }
+    ],
+    name: "setApprovalForAll",
+    outputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
     type: "function"
   },
   {
     constant: true,
-    inputs: [],
-    name: "totalSupply",
+    inputs: [
+      {
+        internalType: "bytes4",
+        name: "interfaceId",
+        type: "bytes4"
+      }
+    ],
+    name: "supportsInterface",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "bool",
         name: "",
-        type: "uint256"
+        type: "bool"
       }
     ],
     payable: false,
     stateMutability: "view",
-    type: "function"
-  },
-  {
-    constant: false,
-    inputs: [
-      {
-        internalType: "address",
-        name: "recipient",
-        type: "address"
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256"
-      }
-    ],
-    name: "transfer",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool"
-      }
-    ],
-    payable: false,
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    constant: false,
-    inputs: [
-      {
-        internalType: "address",
-        name: "sender",
-        type: "address"
-      },
-      {
-        internalType: "address",
-        name: "recipient",
-        type: "address"
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256"
-      }
-    ],
-    name: "transferFrom",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool"
-      }
-    ],
-    payable: false,
-    stateMutability: "nonpayable",
     type: "function"
   }
 ];
@@ -337,14 +352,14 @@ export default {
       isLoading: false,
       reciept: null,
       wallet: undefined,
-      balance: -1
+      balance: undefined
     };
   },
   methods: {
     async balanceOf(address) {
       console.log(address);
       let balance = await this.contractInstance.methods
-        .balanceOf(address)
+        .balanceOf(address, 1)
         .call();
       return balance;
     }
@@ -364,7 +379,7 @@ export default {
     );
     this.web3.eth.getAccounts().then(accounts => {
       console.log(accounts);
-      this.account = accounts[1];
+      this.account = accounts[0];
     });
     // console.log(this.contractInstance);
     // this.wallet = this.web3.eth.accounts.wallet.load("Fabi1103!");
