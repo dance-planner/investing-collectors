@@ -403,7 +403,8 @@ export default {
       isLoading: false,
       reciept: null,
       wallet: undefined,
-      balances: [],
+      balances: [10, 50, 80],
+      maxTokens: [100, 100, 100],
       accounts: []
     };
   },
